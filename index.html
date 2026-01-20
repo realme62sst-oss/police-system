@@ -2,48 +2,23 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>NOMYEN CITY POLICE SYSTEM (SECURE)</title>
+    <title>NOMYEN CITY POLICE SYSTEM (FAST & SECURE)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Sarabun', sans-serif; background-color: #f1f5f9; }
         .money-glow { text-shadow: 0 0 10px rgba(34, 197, 94, 0.4); }
+        .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 1000; justify-content: center; align-items: center; flex-direction: column; }
     </style>
 </head>
 <body class="p-2 md:p-10">
+    <div id="loader" class="loading-overlay">
+        <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-[#1e293b]"></div>
+        <p class="mt-4 font-black text-[#1e293b] animate-pulse text-xl">กำลังประมวลผลระบบ...</p>
+    </div>
 
     <div class="max-w-5xl mx-auto bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-200">
-        
         <div class="bg-[#1e293b] p-8 text-center flex flex-col items-center">
             <div class="bg-white p-2 rounded-2xl mb-4 shadow-lg">
                 <img src="https://cdn.discordapp.com/attachments/1440100204157075497/1463069152360271975/Gemini_Generated_Image_295d5l295d5l295d.png?ex=69707cd4&is=696f2b54&hm=47cca242a96dd05b3c2ef6571e69cffccf7eeec5aacacd9c497bb0e6a14facab" 
-                     class="w-24 h-24 object-contain rounded-xl" alt="Police Logo">
-            </div>
-            <h1 class="text-3xl font-extrabold text-yellow-400">ระบบลงชื่อปฏิบัติงาน (SECURE)</h1>
-            <p class="text-white opacity-60 text-[10px] tracking-[0.4em] font-bold uppercase">ยืนยันตัวตนด้วย PIN 4 หลัก</p>
-        </div>
-        
-        <div class="p-4 md:p-10">
-            <div class="bg-slate-50 p-6 md:p-8 rounded-[2rem] border border-slate-200 mb-8 shadow-inner">
-                <div class="max-w-2xl mx-auto space-y-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-bold text-slate-500 mb-2 ml-1">ลำดับชั้นยศ</label>
-                            <select id="rankInput" class="w-full p-4 border-2 border-slate-200 rounded-2xl outline-none bg-white text-lg font-bold">
-                                <option value="" disabled selected>-- เลือกยศ --</option>
-                                <option value="นร.ตำรวจ">นร.ตำรวจ</option>
-                                <option value="นายสิบตำรวจ">นายสิบตำรวจ</option>
-                                <option value="จ่า">จ่า</option>
-                                <option value="ดาบตำรวจ">ดาบตำรวจ</option>
-                                <option value="ผู้หมวด">ผู้หมวด</option>
-                                <option value="ผู้กอง">ผู้กอง</option>
-                                <option value="สารวัตร">สารวัตร</option>
-                                <option value="รองผู้กำกับ">รองผู้กำกับ</option>
-                                <option value="ผู้กำกับ">ผู้กำกับ</option>
-                                <option value="เลขานุการ">เลขานุการ</option>
-                                <option value="รองผบ.">รอง ผบ.</option>
-                                <option value="ผบ.ตร.">ผบ.ตร.</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-bold
+                     class="w-24 h-24 object-contain rounded-xl
