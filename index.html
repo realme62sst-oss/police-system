@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>NOMYEN CITY POLICE SYSTEM</title>
+    <title>NOMYEN CITY POLICE SYSTEM (CLOUD)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
@@ -20,7 +20,7 @@
                      class="w-24 h-24 object-contain rounded-xl" alt="Police Logo">
             </div>
             <h1 class="text-3xl font-extrabold text-yellow-400">ระบบลงชื่อปฏิบัติงาน</h1>
-            <p class="text-white opacity-60 text-[10px] tracking-[0.4em] font-bold uppercase">Nomyen City Police</p>
+            <p class="text-white opacity-60 text-[10px] tracking-[0.4em] font-bold uppercase">Nomyen City Police (Sync Online)</p>
         </div>
         
         <div class="p-4 md:p-10">
@@ -48,8 +48,8 @@
                         <label class="block text-sm font-bold text-slate-500 mb-2 ml-1">ชื่อ-นามสกุล</label>
                         <input type="text" id="nameInput" placeholder="พิมพ์ชื่อและนามสกุล..." class="w-full p-4 border-2 border-slate-200 rounded-2xl outline-none bg-white text-lg">
                     </div>
-                    <button onclick="addUser()" class="w-full bg-[#1e293b] text-yellow-400 py-4 rounded-2xl font-bold text-xl hover:bg-slate-800 shadow-lg active:scale-95 transition-all">
-                        + เพิ่มรายชื่อ
+                    <button id="addBtn" onclick="addUser()" class="w-full bg-[#1e293b] text-yellow-400 py-4 rounded-2xl font-bold text-xl hover:bg-slate-800 shadow-lg active:scale-95 transition-all">
+                        + เพิ่มรายชื่อเข้าฐานข้อมูลกลาง
                     </button>
                 </div>
             </div>
@@ -62,140 +62,8 @@
                             <th class="p-6 text-center">สถานะ</th>
                             <th class="p-6 text-center">เวลาสะสม</th>
                             <th class="p-6 text-green-600 text-center">โบนัส (IC)</th>
-                            <th class="p-6 text-center">มาแล้ว(วัน)</th>
                             <th class="p-6 text-center">ดำเนินการ</th>
                         </tr>
                     </thead>
-                    <tbody id="policeTable"></tbody>
-                </table>
-            </div>
-            
-            <div class="mt-12 flex justify-between items-center text-slate-400 text-[10px] font-bold tracking-widest">
-                <p>© NOMYEN CITY POLICE | INTERNAL SYSTEM</p>
-                <button onclick="adminClear()" class="hover:text-red-500 transition-colors uppercase border-b border-slate-200">
-                    🔒 Reset Database
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // เปลี่ยน Key เพื่อล้างบั๊กเก่า
-        const STORAGE_NAME = "NYCP_V_ULTRA_1";
-        let policeList = JSON.parse(localStorage.getItem(STORAGE_NAME)) || [];
-
-        function render() {
-            const container = document.getElementById('policeTable');
-            container.innerHTML = "";
-
-            if (policeList.length === 0) {
-                container.innerHTML = `<tr><td colspan="6" class="p-20 text-center text-slate-300 italic">ไม่พบรายชื่อในระบบ</td></tr>`;
-                return;
-            }
-
-            policeList.forEach((u, i) => {
-                const isOn = u.status === 'กำลังปฏิบัติหน้าที่';
-                const h = Math.floor(u.mins / 60);
-                const m = Math.floor(u.mins % 60);
-                const bonus = Math.floor(u.mins * 200);
-
-                const tr = document.createElement('tr');
-                tr.className = "border-b border-slate-100 hover:bg-slate-50 transition-all";
-                tr.innerHTML = `
-                    <td class="p-6">
-                        <div class="text-[10px] text-slate-400 font-black uppercase tracking-tighter">${u.rank}</div>
-                        <div class="text-lg font-bold text-slate-700">${u.name}</div>
-                    </td>
-                    <td class="p-6 text-center">
-                        <span class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase ${isOn ? 'bg-green-100 text-green-600 animate-pulse' : 'bg-slate-100 text-slate-400'}">
-                            ${u.status}
-                        </span>
-                    </td>
-                    <td class="p-6 text-center font-mono font-bold text-slate-600 text-lg">${h}ชม. ${m}น.</td>
-                    <td class="p-6 text-center text-green-600 font-mono font-black text-2xl money-glow">${bonus.toLocaleString()}</td>
-                    <td class="p-6 text-center font-bold text-slate-500">${u.days || 0}</td>
-                    <td class="p-6 text-center">
-                        <div class="flex items-center justify-center gap-2">
-                            <button onclick="toggleDuty(${i})" class="px-5 py-2 rounded-xl font-black text-[10px] uppercase shadow-md active:scale-95 transition-all ${isOn ? 'bg-red-500 text-white' : 'bg-[#1e293b] text-yellow-400'}">
-                                ${isOn ? 'ลงชื่อออก' : 'ลงชื่อเข้า'}
-                            </button>
-                            <button onclick="deleteUser(${i})" class="text-slate-200 hover:text-red-400">🗑️</button>
-                        </div>
-                    </td>
-                `;
-                container.appendChild(tr);
-            });
-        }
-
-        function addUser() {
-            const r = document.getElementById('rankInput').value;
-            const n = document.getElementById('nameInput').value.trim();
-
-            if (r && n) {
-                policeList.push({
-                    rank: r,
-                    name: n,
-                    status: 'พักเวร',
-                    mins: 0,
-                    days: 0,
-                    lastIn: null,
-                    countedDates: []
-                });
-                saveData();
-                document.getElementById('nameInput').value = "";
-                document.getElementById('rankInput').selectedIndex = 0;
-            } else {
-                alert("กรุณาเลือกยศและกรอกชื่อให้ครบ!");
-            }
-        }
-
-        function toggleDuty(i) {
-            const user = policeList[i];
-            const now = Date.now();
-            const dateStr = new Date().toLocaleDateString();
-
-            if (user.status === 'พักเวร') {
-                user.status = 'กำลังปฏิบัติหน้าที่';
-                user.lastIn = now;
-                if (!user.countedDates.includes(dateStr)) {
-                    user.days = (user.days || 0) + 1;
-                    user.countedDates.push(dateStr);
-                }
-            } else {
-                if (user.lastIn) {
-                    user.mins += (now - user.lastIn) / 60000;
-                }
-                user.status = 'พักเวร';
-                user.lastIn = null;
-            }
-            saveData();
-        }
-
-        function deleteUser(i) {
-            if(confirm('ต้องการลบรายชื่อนี้?')) {
-                policeList.splice(i, 1);
-                saveData();
-            }
-        }
-
-        function adminClear() {
-            const p = prompt("ใส่รหัสเพื่อล้างข้อมูล:");
-            if (p === "ไข่ต้ม555") {
-                if(confirm("ล้างข้อมูลทั้งหมด?")) {
-                    localStorage.removeItem(STORAGE_NAME);
-                    policeList = [];
-                    render();
-                }
-            } else if (p !== null) { alert("รหัสผิด!"); }
-        }
-
-        function saveData() {
-            localStorage.setItem(STORAGE_NAME, JSON.stringify(policeList));
-            render();
-        }
-
-        // รันครั้งแรก
-        render();
-    </script>
-</body>
-</html>
+                    <tbody id="policeTable">
+                        <tr><td colspan="5" class="p-20 text-center text-slate-300 animate-
