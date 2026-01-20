@@ -66,4 +66,125 @@
                         </tr>
                     </thead>
                     <tbody id="policeTable">
-                        <tr><td colspan="5" class="p-20 text-center text-slate-300 animate-
+                        <tr><td colspan="5" class="p-20 text-center text-slate-300 animate-pulse font-medium">กำลังโหลดข้อมูล...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-12 flex justify-between items-center text-slate-400 text-[10px] font-bold tracking-widest">
+                <p>© NOMYEN CITY POLICE | REALTIME SYSTEM</p>
+                <button onclick="adminClear()" class="hover:text-red-500 transition-colors uppercase border-b border-slate-200">🔒 Reset</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ใส่ลิงก์ที่คุณส่งมาให้เรียบร้อยแล้ว
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxGErkaI0MajhTtw_XSmqlH9VC4uTSn8hxT45Cf07wVuVc6tk0gMnk_Ik1pH-M_RxSc/exec";
+
+        let policeList = [];
+
+        async function loadData() {
+            try {
+                const response = await fetch(SCRIPT_URL + "?action=read");
+                const rows = await response.json();
+                policeList = rows.map(row => ({
+                    rank: row[0],
+                    name: row[1],
+                    status: row[2],
+                    mins: parseFloat(row[3]) || 0,
+                    lastIn: row[4]
+                }));
+                render();
+            } catch (err) {
+                console.error("Load failed:", err);
+            }
+        }
+
+        function render() {
+            const container = document.getElementById('policeTable');
+            container.innerHTML = "";
+            if (policeList.length === 0) {
+                container.innerHTML = `<tr><td colspan="5" class="p-20 text-center text-slate-300 italic">ไม่พบรายชื่อในระบบ</td></tr>`;
+                return;
+            }
+
+            policeList.forEach((u) => {
+                const isOn = u.status === 'กำลังปฏิบัติหน้าที่';
+                const h = Math.floor(u.mins / 60);
+                const m = Math.floor(u.mins % 60);
+                const bonus = Math.floor(u.mins * 200);
+
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-100 hover:bg-slate-50 transition-all";
+                tr.innerHTML = `
+                    <td class="p-6">
+                        <div class="text-[10px] text-slate-400 font-black uppercase">${u.rank}</div>
+                        <div class="text-lg font-bold text-slate-700">${u.name}</div>
+                    </td>
+                    <td class="p-6 text-center">
+                        <span class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase ${isOn ? 'bg-green-100 text-green-600 animate-pulse' : 'bg-slate-100 text-slate-400'}">
+                            ${u.status}
+                        </span>
+                    </td>
+                    <td class="p-6 text-center font-mono font-bold text-slate-600 text-lg">${h}ชม. ${m}น.</td>
+                    <td class="p-6 text-center text-green-600 font-mono font-black text-2xl money-glow">${bonus.toLocaleString()}</td>
+                    <td class="p-6 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="toggleDuty('${u.name}', '${u.status}', ${u.mins}, '${u.lastIn}')" class="px-5 py-2 rounded-xl font-black text-[10px] uppercase shadow-md active:scale-95 transition-all ${isOn ? 'bg-red-500 text-white' : 'bg-[#1e293b] text-yellow-400'}">
+                                ${isOn ? 'ลงชื่อออก' : 'ลงชื่อเข้า'}
+                            </button>
+                            <button onclick="deleteUser('${u.name}')" class="text-slate-200 hover:text-red-400">🗑️</button>
+                        </div>
+                    </td>
+                `;
+                container.appendChild(tr);
+            });
+        }
+
+        async function addUser() {
+            const r = document.getElementById('rankInput').value;
+            const n = document.getElementById('nameInput').value.trim();
+            if (r && n) {
+                document.getElementById('addBtn').innerText = "กำลังบันทึก...";
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'add', rank: r, name: n })
+                });
+                document.getElementById('nameInput').value = "";
+                document.getElementById('addBtn').innerText = "+ เพิ่มรายชื่อเข้าฐานข้อมูลกลาง";
+                loadData();
+            }
+        }
+
+        async function toggleDuty(name, status, mins, lastIn) {
+            let newStatus = status === 'พักเวร' ? 'กำลังปฏิบัติหน้าที่' : 'พักเวร';
+            let newMins = mins;
+            let now = Date.now();
+            if (status === 'กำลังปฏิบัติหน้าที่') {
+                newMins += (now - parseInt(lastIn)) / 60000;
+            }
+            await fetch(SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'update', name: name, status: newStatus, mins: newMins, lastIn: now.toString() })
+            });
+            loadData();
+        }
+
+        async function deleteUser(name) {
+            if(confirm('ลบรายชื่อนี้ใช่ไหม?')) {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'delete', name: name })
+                });
+                loadData();
+            }
+        }
+
+        function adminClear() { alert("กรุณาลบข้อมูลโดยตรงใน Google Sheets ครับ"); }
+
+        setInterval(loadData, 15000); 
+        loadData();
+    </script>
+</body>
+</html>
