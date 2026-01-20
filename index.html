@@ -2,7 +2,7 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <title>NOMYEN CITY POLICE SYSTEM (FAST & SECURE)</title>
+    <title>NOMYEN CITY POLICE SYSTEM (SECURE)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
@@ -14,11 +14,149 @@
 <body class="p-2 md:p-10">
     <div id="loader" class="loading-overlay">
         <div class="animate-spin rounded-full h-16 w-16 border-b-4 border-[#1e293b]"></div>
-        <p class="mt-4 font-black text-[#1e293b] animate-pulse text-xl">กำลังประมวลผลระบบ...</p>
+        <p class="mt-4 font-black text-[#1e293b]">กำลังประมวลผล...</p>
     </div>
 
     <div class="max-w-5xl mx-auto bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border border-slate-200">
         <div class="bg-[#1e293b] p-8 text-center flex flex-col items-center">
             <div class="bg-white p-2 rounded-2xl mb-4 shadow-lg">
-                <img src="https://cdn.discordapp.com/attachments/1440100204157075497/1463069152360271975/Gemini_Generated_Image_295d5l295d5l295d.png?ex=69707cd4&is=696f2b54&hm=47cca242a96dd05b3c2ef6571e69cffccf7eeec5aacacd9c497bb0e6a14facab" 
-                     class="w-24 h-24 object-contain rounded-xl
+                <img src="https://cdn.discordapp.com/attachments/1440100204157075497/1463069152360271975/Gemini_Generated_Image_295d5l295d5l295d.png?ex=69707cd4&is=696f2b54&hm=47cca242a96dd05b3c2ef6571e69cffccf7eeec5aacacd9c497bb0e6a14facab" class="w-24 h-24 object-contain rounded-xl">
+            </div>
+            <h1 class="text-3xl font-extrabold text-yellow-400">ระบบลงชื่อปฏิบัติงาน (SECURE)</h1>
+            <p class="text-white opacity-60 text-[10px] tracking-[0.4em] font-bold uppercase">ยืนยันตัวตนด้วย PIN 4 หลัก</p>
+        </div>
+        
+        <div class="p-4 md:p-10">
+            <div class="bg-slate-50 p-6 md:p-8 rounded-[2rem] border border-slate-200 mb-8 shadow-inner">
+                <div class="max-w-2xl mx-auto space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-500 mb-2 ml-1">ลำดับชั้นยศ</label>
+                            <select id="rankInput" class="w-full p-4 border-2 border-slate-200 rounded-2xl outline-none bg-white text-lg font-bold">
+                                <option value="" disabled selected>-- เลือกยศ --</option>
+                                <option value="นร.ตำรวจ">นร.ตำรวจ</option>
+                                <option value="นายสิบตำรวจ">นายสิบตำรวจ</option>
+                                <option value="จ่า">จ่า</option>
+                                <option value="ดาบตำรวจ">ดาบตำรวจ</option>
+                                <option value="ผู้หมวด">ผู้หมวด</option>
+                                <option value="ผู้กอง">ผู้กอง</option>
+                                <option value="สารวัตร">สารวัตร</option>
+                                <option value="รองผู้กำกับ">รองผู้กำกับ</option>
+                                <option value="ผู้กำกับ">ผู้กำกับ</option>
+                                <option value="เลขานุการ">เลขานุการ</option>
+                                <option value="รองผบ.">รอง ผบ.</option>
+                                <option value="ผบ.ตร.">ผบ.ตร.</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-500 mb-2 ml-1">ชื่อ-นามสกุล</label>
+                            <input type="text" id="nameInput" placeholder="ระบุชื่อ..." class="w-full p-4 border-2 border-slate-200 rounded-2xl outline-none bg-white text-lg font-bold">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-red-500 mb-2 ml-1">ตั้งรหัส PIN 4 หลัก</label>
+                        <input type="password" id="pinRegister" maxlength="4" inputmode="numeric" placeholder="ตัวเลข 4 หลัก" class="w-full p-4 border-2 border-red-100 rounded-2xl outline-none bg-white text-lg text-center font-bold tracking-[1em]">
+                    </div>
+                    <button onclick="addUser()" class="w-full bg-[#1e293b] text-yellow-400 py-4 rounded-2xl font-bold text-xl hover:bg-slate-800 shadow-lg active:scale-95 transition-all">
+                        + ลงทะเบียนรายชื่อใหม่
+                    </button>
+                </div>
+            </div>
+
+            <div class="overflow-x-auto rounded-[1.5rem] border border-slate-200 shadow-sm bg-white">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-50 border-b border-slate-200">
+                        <tr class="text-slate-500 text-[11px] font-black uppercase tracking-widest">
+                            <th class="p-6">ยศ - ชื่อ - นามสกุล</th>
+                            <th class="p-6 text-center">สถานะ</th>
+                            <th class="p-6 text-center">เวลาสะสม</th>
+                            <th class="p-6 text-green-600 text-center">โบนัส (IC)</th>
+                            <th class="p-6 text-center">ดำเนินการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="policeTable">
+                        <tr><td colspan="5" class="p-20 text-center text-slate-300 animate-pulse font-medium">กำลังโหลดข้อมูล...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxGErkaI0MajhTtw_XSmqlH9VC4uTSn8hxT45Cf07wVuVc6tk0gMnk_Ik1pH-M_RxSc/exec";
+        let policeList = [];
+
+        function showLoading(show) { document.getElementById('loader').style.display = show ? 'flex' : 'none'; }
+
+        async function loadData() {
+            try {
+                const response = await fetch(SCRIPT_URL + "?action=read");
+                const rows = await response.json();
+                policeList = rows.map(row => ({ rank: row[0], name: row[1], status: row[2], mins: parseFloat(row[3]) || 0, lastIn: row[4] }));
+                render();
+            } catch (err) { console.error("Load failed:", err); }
+        }
+
+        function render() {
+            const container = document.getElementById('policeTable');
+            container.innerHTML = "";
+            policeList.forEach((u) => {
+                const isOn = u.status === 'กำลังปฏิบัติหน้าที่';
+                const bonus = Math.floor(u.mins * 200);
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-slate-100 hover:bg-slate-50 transition-all";
+                tr.innerHTML = `
+                    <td class="p-6">
+                        <div class="text-[10px] text-slate-400 font-black uppercase">${u.rank}</div>
+                        <div class="text-lg font-bold text-slate-700">${u.name}</div>
+                    </td>
+                    <td class="p-6 text-center">
+                        <span class="px-4 py-1.5 rounded-full text-[10px] font-black uppercase ${isOn ? 'bg-green-100 text-green-600 animate-pulse' : 'bg-slate-100 text-slate-400'}">
+                            ${u.status}
+                        </span>
+                    </td>
+                    <td class="p-6 text-center font-mono font-bold text-slate-600">${Math.floor(u.mins/60)}ชม. ${Math.floor(u.mins%60)}น.</td>
+                    <td class="p-6 text-center text-green-600 font-mono font-black text-2xl money-glow">${bonus.toLocaleString()}</td>
+                    <td class="p-6 text-center">
+                        <button onclick="handleDuty('${u.name}', '${u.status}', ${u.mins}, '${u.lastIn}')" class="px-5 py-2 rounded-xl font-black text-[10px] uppercase shadow-md active:scale-95 transition-all ${isOn ? 'bg-red-500 text-white' : 'bg-[#1e293b] text-yellow-400'}">
+                            ${isOn ? 'ลงชื่อออก' : 'ลงชื่อเข้า'}
+                        </button>
+                    </td>
+                `;
+                container.appendChild(tr);
+            });
+        }
+
+        async function addUser() {
+            const r = document.getElementById('rankInput').value;
+            const n = document.getElementById('nameInput').value.trim();
+            const p = document.getElementById('pinRegister').value;
+            if (!r || !n || p.length !== 4) return alert("กรุณากรอกข้อมูลและ PIN 4 หลักให้ครบ!");
+            showLoading(true);
+            await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'add', rank: r, name: n, pin: p }) });
+            document.getElementById('nameInput').value = "";
+            document.getElementById('pinRegister').value = "";
+            await loadData();
+            showLoading(false);
+        }
+
+        async function handleDuty(name, status, mins, lastIn) {
+            const userPin = prompt(`ระบุ PIN 4 หลักของ ${name}:`);
+            if (!userPin || userPin.length !== 4) return;
+            showLoading(true);
+            let newStatus = status === 'พักเวร' ? 'กำลังปฏิบัติหน้าที่' : 'พักเวร';
+            let newMins = mins;
+            let now = Date.now();
+            if (status === 'กำลังปฏิบัติหน้าที่') newMins += (now - parseInt(lastIn)) / 60000;
+            const response = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'update', name: name, status: newStatus, mins: newMins, lastIn: now.toString(), pin: userPin }) });
+            const res = await response.text();
+            if (res === "Wrong PIN") alert("❌ รหัส PIN ไม่ถูกต้อง!");
+            await loadData();
+            showLoading(false);
+        }
+
+        loadData();
+        setInterval(loadData, 30000);
+    </script>
+</body>
+</html>
